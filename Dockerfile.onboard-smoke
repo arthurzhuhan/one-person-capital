@@ -1,0 +1,40 @@
+FROM ubuntu:24.04
+
+ARG NODE_MAJOR=20
+ARG ONE_PERSON_CAPITAL_VERSION=latest
+ARG HOST_UID=10001
+
+ENV DEBIAN_FRONTEND=noninteractive \
+  ONE_PERSON_CAPITAL_HOME=/one-person-capital \
+  ONE_PERSON_CAPITAL_OPEN_ON_LISTEN=false \
+  HOST=0.0.0.0 \
+  PORT=3100 \
+  HOME=/home/one-person-capital \
+  LANG=en_US.UTF-8 \
+  LC_ALL=en_US.UTF-8 \
+  NPM_CONFIG_UPDATE_NOTIFIER=false \
+  NODE_MAJOR=${NODE_MAJOR} \
+  ONE_PERSON_CAPITAL_VERSION=${ONE_PERSON_CAPITAL_VERSION}
+
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends ca-certificates curl gnupg locales \
+  && mkdir -p /etc/apt/keyrings \
+  && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key \
+    | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
+  && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_${NODE_MAJOR}.x nodistro main" \
+    > /etc/apt/sources.list.d/nodesource.list \
+  && apt-get update \
+  && apt-get install -y --no-install-recommends nodejs \
+  && locale-gen en_US.UTF-8 \
+  && groupadd --gid 10001 onepersoncapital \
+  && useradd --create-home --shell /bin/bash --uid "${HOST_UID}" --gid 10001 onepersoncapital \
+  && mkdir -p /one-person-capital /home/one-person-capital/workspace \
+  && chown -R onepersoncapital:onepersoncapital /one-person-capital /home/one-person-capital \
+  && rm -rf /var/lib/apt/lists/*
+
+VOLUME ["/one-person-capital"]
+WORKDIR /home/one-person-capital/workspace
+EXPOSE 3100
+USER onepersoncapital
+
+CMD ["bash", "-lc", "set -euo pipefail; mkdir -p \"$ONE_PERSON_CAPITAL_HOME\"; npx --yes \"one-person-capital@${ONE_PERSON_CAPITAL_VERSION}\" onboard --yes --data-dir \"$ONE_PERSON_CAPITAL_HOME\""]

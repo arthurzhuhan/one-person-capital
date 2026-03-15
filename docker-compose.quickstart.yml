@@ -1,0 +1,18 @@
+services:
+  one-person-capital:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${ONE_PERSON_CAPITAL_PORT:-3100}:3100"
+    environment:
+      HOST: "0.0.0.0"
+      ONE_PERSON_CAPITAL_HOME: "/one-person-capital"
+      OPENAI_API_KEY: "${OPENAI_API_KEY:-}"
+      ANTHROPIC_API_KEY: "${ANTHROPIC_API_KEY:-}"
+      ONE_PERSON_CAPITAL_DEPLOYMENT_MODE: "authenticated"
+      ONE_PERSON_CAPITAL_DEPLOYMENT_EXPOSURE: "private"
+      ONE_PERSON_CAPITAL_PUBLIC_URL: "${ONE_PERSON_CAPITAL_PUBLIC_URL:-http://localhost:3100}"
+      BETTER_AUTH_SECRET: "${BETTER_AUTH_SECRET:?BETTER_AUTH_SECRET must be set}"
+    volumes:
+      - "${ONE_PERSON_CAPITAL_DATA_DIR:-./data/docker-one-person-capital}:/one-person-capital"

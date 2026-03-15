@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: one-person-capital
+      POSTGRES_PASSWORD: one-person-capital
+      POSTGRES_DB: one-person-capital
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U one-person-capital -d one-person-capital"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  server:
+    build: .
+    ports:
+      - "3100:3100"
+    environment:
+      DATABASE_URL: postgres://one-person-capital:one-person-capital@db:5432/one-person-capital
+      PORT: "3100"
+      SERVE_UI: "true"
+      ONE_PERSON_CAPITAL_DEPLOYMENT_MODE: "authenticated"
+      ONE_PERSON_CAPITAL_DEPLOYMENT_EXPOSURE: "private"
+      ONE_PERSON_CAPITAL_PUBLIC_URL: "${ONE_PERSON_CAPITAL_PUBLIC_URL:-http://localhost:3100}"
+      BETTER_AUTH_SECRET: "${BETTER_AUTH_SECRET:?BETTER_AUTH_SECRET must be set}"
+    volumes:
+      - one-person-capital-data:/one-person-capital
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  one-person-capital-data:

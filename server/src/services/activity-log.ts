@@ -1,0 +1,48 @@
+import type { Db } from "@one-person-capital/db";
+import { activityLog } from "@one-person-capital/db";
+import { publishLiveEvent } from "./live-events.js";
+import { redactCurrentUserValue } from "../log-redaction.js";
+import { sanitizeRecord } from "../redaction.js";
+
+export interface LogActivityInput {
+  companyId: string;
+  actorType: "agent" | "user" | "system";
+  actorId: string;
+  action: string;
+  entityType: string;
+  entityId: string;
+  agentId?: string | null;
+  runId?: string | null;
+  details?: Record<string, unknown> | null;
+}
+
+export async function logActivity(db: Db, input: LogActivityInput) {
+  const sanitizedDetails = input.details ? sanitizeRecord(input.details) : null;
+  const redactedDetails = sanitizedDetails ? redactCurrentUserValue(sanitizedDetails) : null;
+  await db.insert(activityLog).values({
+    companyId: input.companyId,
+    actorType: input.actorType,
+    actorId: input.actorId,
+    action: input.action,
+    entityType: input.entityType,
+    entityId: input.entityId,
+    agentId: input.agentId ?? null,
+    runId: input.runId ?? null,
+    details: redactedDetails,
+  });
+
+  publishLiveEvent({
+    companyId: input.companyId,
+    type: "activity.logged",
+    payload: {
+      actorType: input.actorType,
+      actorId: input.actorId,
+      action: input.action,
+      entityType: input.entityType,
+      entityId: input.entityId,
+      agentId: input.agentId ?? null,
+      runId: input.runId ?? null,
+      details: redactedDetails,
+    },
+  });
+}

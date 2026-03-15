@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="32" viewBox="0 0 140 32" fill="none">
+  <path d="M75 25C68.3 18.3 59.4 14.5 50 14.5C30.4 14.5 14.5 30.4 14.5 50C14.5 69.6 30.4 85.5 50 85.5C59.4 85.5 68.3 81.7 75 75" stroke="#e4e4e7" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="50" cy="50" r="10" fill="#e4e4e7"/>
+  <text x="32" y="22" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="600" fill="#e4e4e7">One Person Capital</text>
+</svg>

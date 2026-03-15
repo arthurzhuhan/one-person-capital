@@ -1,0 +1,75 @@
+{
+  "name": "@one-person-capital/server",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "publishConfig": {
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js"
+      }
+    },
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts"
+  },
+  "files": [
+    "dist",
+    "ui-dist",
+    "skills"
+  ],
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "dev:watch": "cross-env ONE_PERSON_CAPITAL_MIGRATION_PROMPT=never tsx watch --ignore ../ui/node_modules --ignore ../ui/.vite --ignore ../ui/dist src/index.ts",
+    "prepare:ui-dist": "bash ../scripts/prepare-server-ui-dist.sh",
+    "build": "tsc",
+    "prepack": "pnpm run prepare:ui-dist",
+    "postpack": "rm -rf ui-dist",
+    "clean": "rm -rf dist",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.888.0",
+    "@one-person-capital/adapter-claude-local": "workspace:*",
+    "@one-person-capital/adapter-codex-local": "workspace:*",
+    "@one-person-capital/adapter-cursor-local": "workspace:*",
+    "@one-person-capital/adapter-gemini-local": "workspace:*",
+    "@one-person-capital/adapter-opencode-local": "workspace:*",
+    "@one-person-capital/adapter-pi-local": "workspace:*",
+    "@one-person-capital/adapter-openclaw-gateway": "workspace:*",
+    "@one-person-capital/adapter-utils": "workspace:*",
+    "@one-person-capital/db": "workspace:*",
+    "@one-person-capital/shared": "workspace:*",
+    "better-auth": "1.4.18",
+    "detect-port": "^2.1.0",
+    "dotenv": "^17.0.1",
+    "drizzle-orm": "^0.38.4",
+    "embedded-postgres": "^18.1.0-beta.16",
+    "express": "^5.1.0",
+    "multer": "^2.0.2",
+    "open": "^11.0.0",
+    "pino": "^9.6.0",
+    "pino-http": "^10.4.0",
+    "pino-pretty": "^13.1.3",
+    "ws": "^8.19.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/express-serve-static-core": "^5.0.0",
+    "@types/multer": "^2.0.0",
+    "@types/node": "^24.6.0",
+    "@types/supertest": "^6.0.2",
+    "@types/ws": "^8.18.1",
+    "cross-env": "^10.1.0",
+    "supertest": "^7.0.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3",
+    "vite": "^6.1.0",
+    "vitest": "^3.0.5"
+  }
+}
